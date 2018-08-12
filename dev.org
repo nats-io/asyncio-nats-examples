@@ -1,32 +1,501 @@
 #+TITLE: Python Examples
 #+startup: showeverything
+#+property: header-args :results output
 
-** [0/45] Progress
-
-*** TODO connect_default
-
-#+BEGIN_SRC python :tangle connect_default.py
-
+#+BEGIN_SRC emacs-lisp
+(setq org-babel-python-command "python3")
 #+END_SRC
 
-*** TODO connect_url
-*** TODO connect_options
-*** TODO connect_multiple
-*** TODO reconnect_no_random
-*** TODO reconnect_none
-*** TODO reconnect_10x
-*** TODO reconnect_5mb
-*** TODO reconnect_10s
-*** TODO reconnect_event
-*** TODO ping_20s
-*** TODO ping_5
-*** TODO max_payload
-*** TODO control_2k
-*** TODO no_echo
-*** TODO connect_pedantic
-*** TODO connect_verbose
-*** TODO connect_name
-*** TODO connect_tls
+** [15/41] Progress
+
+*** DONE connect_default
+
+#+BEGIN_SRC python :tangle connect_default.py
+import asyncio
+from nats.aio.client import Client as NATS
+
+async def example():
+   # [begin connect_default]
+   nc = NATS()
+   await nc.connect()
+
+   # Do something with the connection
+
+   await nc.close()
+
+   # [end connect_default]
+
+loop = asyncio.get_event_loop()
+loop.run_until_complete(example())
+loop.close()
+#+END_SRC
+
+#+RESULTS:
+
+*** DONE connect_url
+
+#+BEGIN_SRC python :tangle connect_url.py
+import asyncio
+from nats.aio.client import Client as NATS
+
+async def example():
+   # [begin connect_url]
+   nc = NATS()
+   await nc.connect(servers=["nats://demo.nats.io:4222"])
+
+   # Do something with the connection
+
+   await nc.close()
+
+   # [end connect_url]
+
+loop = asyncio.get_event_loop()
+loop.run_until_complete(example())
+loop.close()
+#+END_SRC
+
+#+RESULTS:
+
+*** COMMENT connect_options
+
+#+BEGIN_SRC python :tangle connect_url.py
+import asyncio
+from nats.aio.client import Client as NATS
+
+async def example():
+   # [begin connect_url]
+   nc = NATS()
+   await nc.connect(servers=["nats://demo.nats.io:4222"])
+
+   # Do something with the connection
+
+   await nc.close()
+
+   # [end connect_url]
+
+loop = asyncio.get_event_loop()
+loop.run_until_complete(example())
+loop.close()
+#+END_SRC
+
+*** DONE connect_multiple
+
+#+BEGIN_SRC python :tangle connect_multiple.py
+import asyncio
+from nats.aio.client import Client as NATS
+
+async def example():
+   # [begin connect_multiple]
+   nc = NATS()
+   await nc.connect(servers=[
+      "nats://127.0.0.1:1222",
+      "nats://127.0.0.1:1223",
+      "nats://127.0.0.1:1224"
+      ])
+
+   # Do something with the connection
+
+   await nc.close()
+
+   # [end connect_multiple]
+
+loop = asyncio.get_event_loop()
+loop.run_until_complete(example())
+loop.close()
+#+END_SRC
+
+#+RESULTS:
+
+*** DONE reconnect_no_random
+
+#+BEGIN_SRC python :tangle reconnect_no_random.py
+import asyncio
+from nats.aio.client import Client as NATS
+
+async def example():
+   # [begin reconnect_no_random]
+   nc = NATS()
+   await nc.connect(
+      servers=[
+         "nats://127.0.0.1:1222",
+         "nats://127.0.0.1:1223",
+         "nats://127.0.0.1:1224"
+         ],
+      dont_randomize=True,
+      )
+
+   # Do something with the connection
+
+   await nc.close()
+
+   # [end reconnect_no_random]
+
+loop = asyncio.get_event_loop()
+loop.run_until_complete(example())
+loop.close()
+#+END_SRC
+
+#+RESULTS:
+
+*** DONE reconnect_none
+
+#+BEGIN_SRC python :tangle reconnect_none.py
+import asyncio
+from nats.aio.client import Client as NATS
+
+async def example():
+   # [begin reconnect_none]
+   nc = NATS()
+   await nc.connect(
+      servers=[
+         "nats://127.0.0.1:1222",
+         "nats://127.0.0.1:1223",
+         "nats://127.0.0.1:1224"
+         ],
+      allow_reconnect=False,
+      )
+
+   # Do something with the connection
+
+   await nc.close()
+
+   # [end reconnect_none]
+
+loop = asyncio.get_event_loop()
+loop.run_until_complete(example())
+loop.close()
+#+END_SRC
+
+#+RESULTS:
+
+*** DONE reconnect_10x
+
+#+BEGIN_SRC python :tangle reconnect_10x.py
+import asyncio
+from nats.aio.client import Client as NATS
+
+async def example():
+   # [begin reconnect_10x]
+   nc = NATS()
+   await nc.connect(
+      servers=["nats://demo.nats.io:4222"],
+      max_reconnect_attempts=10,
+      )
+
+   # Do something with the connection
+
+   await nc.close()
+
+   # [end reconnect_10x]
+
+loop = asyncio.get_event_loop()
+loop.run_until_complete(example())
+loop.close()
+#+END_SRC
+
+#+RESULTS:
+
+*** COMMENT reconnect_5mb
+
+#+BEGIN_SRC python :tangle reconnect_5mb.py
+import asyncio
+from nats.aio.client import Client as NATS
+
+async def example():
+   # [begin reconnect_5mb]
+   nc = NATS()
+   await nc.connect(
+      servers=["nats://demo.nats.io:4222"],
+      max_reconnect_attempts=10,
+      )
+
+   # Do something with the connection
+
+   await nc.close()
+
+   # [end reconnect_5mb]
+
+loop = asyncio.get_event_loop()
+loop.run_until_complete(example())
+loop.close()
+#+END_SRC
+
+*** DONE reconnect_10s
+
+#+BEGIN_SRC python :tangle reconnect_10s.py
+import asyncio
+from nats.aio.client import Client as NATS
+
+async def example():
+   # [begin reconnect_10s]
+   nc = NATS()
+   await nc.connect(
+      servers=["nats://demo.nats.io:4222"],
+      reconnect_time_wait=10,
+      )
+
+   # Do something with the connection
+
+   await nc.close()
+
+   # [end reconnect_10s]
+
+loop = asyncio.get_event_loop()
+loop.run_until_complete(example())
+loop.close()
+#+END_SRC
+
+#+RESULTS:
+
+*** DONE reconnect_event
+
+#+BEGIN_SRC python :tangle reconnect_event.py
+import asyncio
+from nats.aio.client import Client as NATS
+
+async def example():
+
+   # [begin reconnect_event]
+   nc = NATS()
+
+   async def disconnected_cb():
+      print("Got disconnected!")
+
+   async def reconnected_cb():
+      # See who we are connected to on reconnect.
+      print("Got reconnected to {url}".format(url=nc.connected_url.netloc))
+
+   await nc.connect(
+      servers=["nats://127.0.0.1:4222"],
+      reconnect_time_wait=10,
+      reconnected_cb=reconnected_cb,
+      disconnected_cb=disconnected_cb,
+      )
+
+   # Do something with the connection.
+
+   # [end reconnect_event]
+
+   while True:
+     if nc.is_closed:
+       break
+     await asyncio.sleep(1)
+
+   await nc.close()
+
+loop = asyncio.get_event_loop()
+loop.run_until_complete(example())
+loop.close()
+#+END_SRC
+
+*** DONE ping_20s
+
+#+BEGIN_SRC python :tangle ping_20s.py
+import asyncio
+from nats.aio.client import Client as NATS
+
+async def example():
+
+   # [begin ping_20s]
+   nc = NATS()
+
+   await nc.connect(
+      servers=["nats://demo.nats.io:4222"],
+      # Set Ping Interval to 20 seconds
+      ping_interval=20,
+      )
+
+   # Do something with the connection.
+
+   # [end ping_20s]
+
+   while True:
+     if nc.is_closed:
+       break
+     await asyncio.sleep(1)
+
+   await nc.close()
+
+loop = asyncio.get_event_loop()
+loop.run_until_complete(example())
+loop.close()
+#+END_SRC
+
+*** DONE ping_5
+
+#+BEGIN_SRC python :tangle ping_5.py
+import asyncio
+from nats.aio.client import Client as NATS
+
+async def example():
+
+   # [begin ping_5]
+   nc = NATS()
+
+   await nc.connect(
+      servers=["nats://127.0.0.1:4222"],
+      # Set maximum number of PINGs out without getting a PONG back
+      # before the connection will be disconnected as a stale connection.
+      max_outstanding_pings=5,
+      ping_interval=1,
+      )
+
+   # Do something with the connection.
+
+   # [end ping_5]
+
+   while True:
+     if nc.is_closed:
+       break
+     await asyncio.sleep(1)
+
+   await nc.close()
+
+loop = asyncio.get_event_loop()
+loop.run_until_complete(example())
+loop.close()
+#+END_SRC
+
+*** DONE max_payload
+
+#+BEGIN_SRC python :tangle max_payload.py
+import asyncio
+from nats.aio.client import Client as NATS
+
+async def example():
+
+   # [begin max_payload]
+   nc = NATS()
+
+   await nc.connect(servers=["nats://demo.nats.io:4222"])
+
+   print("Maximum payload is %d bytes" % nc.max_payload)
+
+   # Do something with the max payload.
+
+   # [end max_payload]
+
+   await nc.close()
+
+loop = asyncio.get_event_loop()
+loop.run_until_complete(example())
+loop.close()
+#+END_SRC
+
+#+RESULTS:
+: Maximum payload is 1048576 bytes
+
+*** COMMENT control_2k
+*** COMMENT no_echo
+*** DONE connect_pedantic
+
+#+BEGIN_SRC python :tangle connect_pedantic.py
+import asyncio
+from nats.aio.client import Client as NATS
+
+async def example():
+
+   # [begin connect_pedantic]
+   nc = NATS()
+
+   await nc.connect(servers=["nats://127.0.0.1:4222"], pedantic=True)
+
+   # Do something with the connection.
+
+   # [end connect_pedantic]
+
+   await nc.close()
+
+loop = asyncio.get_event_loop()
+loop.run_until_complete(example())
+loop.close()
+#+END_SRC
+
+#+RESULTS:
+
+*** DONE connect_verbose
+
+#+BEGIN_SRC python :tangle connect_verbose.py
+import asyncio
+from nats.aio.client import Client as NATS
+
+async def example():
+
+   # [begin connect_verbose]
+   nc = NATS()
+
+   await nc.connect(servers=["nats://127.0.0.1:4222"], verbose=True)
+
+   # Do something with the connection.
+
+   # [end connect_verbose]
+
+   await nc.close()
+
+loop = asyncio.get_event_loop()
+loop.run_until_complete(example())
+loop.close()
+#+END_SRC
+
+#+RESULTS:
+
+*** DONE connect_name
+
+#+BEGIN_SRC python :tangle connect_name.py
+import asyncio
+from nats.aio.client import Client as NATS
+
+async def example():
+
+   # [begin connect_name]
+   nc = NATS()
+
+   await nc.connect(servers=["nats://127.0.0.1:4222"], name="my-connection")
+
+   # Do something with the connection.
+
+   # [end connect_name]
+
+   await nc.close()
+
+loop = asyncio.get_event_loop()
+loop.run_until_complete(example())
+loop.close()
+#+END_SRC
+
+#+RESULTS:
+
+*** DONE connect_tls
+
+#+BEGIN_SRC python :tangle connect_tls.py
+import asyncio
+import ssl
+from nats.aio.client import Client as NATS
+
+async def example():
+
+   # [begin connect_tls]
+   nc = NATS()
+
+   ssl_ctx = ssl.create_default_context(purpose=ssl.Purpose.SERVER_AUTH)
+   ssl_ctx.load_verify_locations('ca.pem')
+   ssl_ctx.load_cert_chain(certfile='client-cert.pem',
+                           keyfile='client-key.pem')
+   await nc.connect(io_loop=loop, tls=ssl_ctx)
+
+   await nc.connect(servers=["nats://127.0.0.1:4222"], tls=ssl_ctx)
+
+   # Do something with the connection.
+
+   # [end connect_tls]
+
+   await nc.close()
+
+loop = asyncio.get_event_loop()
+loop.run_until_complete(example())
+loop.close()
+#+END_SRC
+
 *** TODO connect_tls_url
 *** TODO connect_userpass
 *** TODO connect_userpass_url
