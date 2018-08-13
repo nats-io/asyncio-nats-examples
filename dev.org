@@ -914,7 +914,43 @@ loop.run_until_complete(example())
 loop.close()
 #+END_SRC
 
-*** TODO subscribe_json
+*** COMMENT subscribe_json
+
+#+BEGIN_SRC python :tangle subscribe_json.py
+import asyncio
+import json
+from nats.aio.client import Client as NATS
+from nats.aio.utils import new_inbox
+
+async def example():
+
+   # [begin subscribe_json]
+   nc = NATS()
+
+   async def sub(msg):
+     print(msg)
+     # await nc.publish(msg.reply, b'response')
+
+   await nc.connect(servers=["nats://127.0.0.1:4222"])
+   await nc.subscribe("updates", cb=sub)
+
+   # Send the request
+   try:
+     msg = await nc.request("time", b'', timeout=1)
+     # Use the response
+     print("Reply:", msg)
+   except asyncio.TimeoutError:
+     print("Timed out waiting for response")
+
+   # [end subscribe_json]
+
+   await nc.close()
+
+loop = asyncio.get_event_loop()
+loop.run_until_complete(example())
+loop.close()
+#+END_SRC
+
 *** TODO subscribe_star
 *** TODO subscribe_arrow
 *** TODO subscribe_queue
