@@ -2,11 +2,13 @@
 #+startup: showeverything
 #+property: header-args :results output
 
+** COMMENT Notes
+
 #+BEGIN_SRC emacs-lisp
 (setq org-babel-python-command "python3")
 #+END_SRC
 
-** [28/39] [71%] Progress
+** [35/35] [100%] Progress
 
 *** DONE connect_default
 
@@ -951,13 +953,313 @@ loop.run_until_complete(example())
 loop.close()
 #+END_SRC
 
-*** TODO subscribe_star
-*** TODO subscribe_arrow
-*** TODO subscribe_queue
-*** TODO wildcard_tester
-*** TODO connection_listener
-*** TODO servers_added
-*** TODO error_listener
-*** TODO connect_status
-*** TODO slow_pending_limits
-*** TODO slow_listener      
+*** DONE subscribe_star
+
+#+BEGIN_SRC python :tangle subscribe_star.py
+import asyncio
+from nats.aio.client import Client as NATS
+
+async def example():
+
+   # [begin subscribe_star]
+   nc = NATS()
+
+   await nc.connect(servers=["nats://127.0.0.1:4222"])
+
+   # Use queue to wait for 2 messages to arrive
+   queue = asyncio.Queue()
+   async def cb(msg):
+     await queue.put_nowait(msg)
+
+   await nc.subscribe("time.*.east", cb=cb)
+
+   # Send 2 messages and wait for them to come in
+   await nc.publish("time.A.east", b'A')
+   await nc.publish("time.B.east", b'B')
+
+   msg_A = await queue.get()
+   msg_B = await queue.get()
+
+   print("Msg A:", msg_A)
+   print("Msg B:", msg_B)
+
+   # [end subscribe_star]
+
+   await nc.close()
+
+loop = asyncio.get_event_loop()
+loop.run_until_complete(example())
+loop.close()
+#+END_SRC
+
+*** DONE subscribe_arrow
+
+#+BEGIN_SRC python :tangle subscribe_arrow.py
+import asyncio
+from nats.aio.client import Client as NATS
+
+async def example():
+
+   # [begin subscribe_arrow]
+   nc = NATS()
+
+   await nc.connect(servers=["nats://127.0.0.1:4222"])
+
+   # Use queue to wait for 4 messages to arrive
+   queue = asyncio.Queue()
+   async def cb(msg):
+     await queue.put(msg)
+
+   await nc.subscribe("time.>", cb=cb)
+
+   # Send 2 messages and wait for them to come in
+   await nc.publish("time.A.east", b'A')
+   await nc.publish("time.B.east", b'B')
+   await nc.publish("time.C.west", b'C')
+   await nc.publish("time.D.west", b'D')
+
+   for i in range(0, 4):
+     msg = await queue.get()
+     print("Msg:", msg)
+
+   await nc.close()
+
+   # [end subscribe_arrow]
+
+loop = asyncio.get_event_loop()
+loop.run_until_complete(example())
+loop.close()
+#+END_SRC
+
+*** DONE subscribe_queue
+
+#+BEGIN_SRC python :tangle subscribe_queue.py
+import asyncio
+from nats.aio.client import Client as NATS
+
+async def example():
+
+   # [begin subscribe_queue]
+   nc = NATS()
+
+   await nc.connect(servers=["nats://127.0.0.1:4222"])
+
+   future = asyncio.Future()
+
+   async def cb(msg):
+     nonlocal future
+     future.set_result(msg)
+
+   await nc.subscribe("updates", queue="workers", cb=cb)
+   await nc.publish("updates", b'All is Well')
+
+   msg = await asyncio.wait_for(future, 1)
+   print("Msg", msg)
+
+   # [end subscribe_queue]
+
+   await nc.close()
+
+loop = asyncio.get_event_loop()
+loop.run_until_complete(example())
+loop.close()
+#+END_SRC
+
+*** DONE wildcard_tester
+
+#+BEGIN_SRC python :tangle wildcard_tester.py
+import asyncio
+from nats.aio.client import Client as NATS
+
+async def example():
+
+   # [begin wildcard_tester]
+   nc = NATS()
+
+   await nc.connect(servers=["nats://127.0.0.1:4222"])
+
+   await nc.publish("time.us.east", b'...')
+   await nc.publish("time.us.east.atlanta", b'...')
+
+   await nc.publish("time.eu.east", b'...')
+   await nc.publish("time.eu.east.warsaw", b'...')
+
+   await nc.close()
+
+   # [end wildcard_tester]
+
+loop = asyncio.get_event_loop()
+loop.run_until_complete(example())
+loop.close()
+#+END_SRC
+
+*** COMMENT connection_listener
+
+*** COMMENT servers_added
+
+*** DONE error_listener
+
+#+BEGIN_SRC python :tangle error_listener.py
+import asyncio
+from nats.aio.client import Client as NATS
+
+async def example():
+
+   # [begin error_listener]
+   nc = NATS()
+
+   async def error_cb(e):
+      print("Error: ", e)
+
+   await nc.connect(
+      servers=["nats://127.0.0.1:4222"],
+      reconnect_time_wait=10,
+      error_cb=error_cb,
+      )
+
+   # Do something with the connection.
+
+   # [end error_listener]
+
+   while True:
+     if nc.is_closed:
+       break
+     await asyncio.sleep(1)
+
+   await nc.close()
+
+loop = asyncio.get_event_loop()
+loop.run_until_complete(example())
+loop.close()
+#+END_SRC
+
+*** DONE connect_status
+
+#+BEGIN_SRC python :tangle connect_status.py
+import asyncio
+from nats.aio.client import Client as NATS
+
+async def example():
+
+   # [begin connect_status]
+   nc = NATS()
+
+   await nc.connect(
+      servers=["nats://127.0.0.1:4222"],
+      )
+
+   # Do something with the connection.
+
+   print("The connection is connected?", nc.is_connected)
+
+   while True:
+     if nc.is_reconnecting:
+       print("Reconnecting to NATS...")
+       break
+     await asyncio.sleep(1)
+
+   await nc.close()
+
+   print("The connection is closed?", nc.is_closed)
+
+   # [end connect_status]
+
+loop = asyncio.get_event_loop()
+loop.run_until_complete(example())
+loop.close()
+#+END_SRC
+
+*** COMMENT slow_pending_limits
+
+#+BEGIN_SRC python :tangle slow_pending_limits.py
+import asyncio
+from nats.aio.client import Client as NATS
+
+async def example():
+
+   # [begin slow_pending_limits]
+   nc = NATS()
+
+   await nc.connect(
+      servers=["nats://127.0.0.1:4222"],
+      )
+
+   # Do something with the connection.
+
+   print("The connection is connected?", nc.is_connected)
+
+   while True:
+     if nc.is_reconnecting:
+       print("Reconnecting to NATS...")
+       break
+     await asyncio.sleep(1)
+
+   await nc.close()
+
+   print("The connection is closed?", nc.is_closed)
+
+   # [end slow_pending_limits]
+
+loop = asyncio.get_event_loop()
+loop.run_until_complete(example())
+loop.close()
+#+END_SRC
+ 
+*** DONE slow_listener
+
+#+BEGIN_SRC python :tangle slow_listener.py
+import asyncio
+import nats.aio.errors
+from nats.aio.client import Client as NATS
+
+async def example():
+
+   # [begin slow_listener]
+
+   nc = NATS()
+
+   async def error_cb(e):
+     if type(e) is nats.aio.errors.ErrSlowConsumer:
+       print("Slow consumer error, unsubscribing from handling further messages...")
+       await nc.unsubscribe(e.sid)
+
+   await nc.connect(
+      servers=["nats://127.0.0.1:4222"],
+      error_cb=error_cb,
+      )
+
+   msgs = []
+   future = asyncio.Future()
+   async def cb(msg):
+       nonlocal msgs
+       nonlocal future
+       print(msg)
+       msgs.append(msg)
+
+       if len(msgs) == 3:
+         # Head of line blocking on other messages caused
+	 # by single message proccesing taking long...
+         await asyncio.sleep(1)
+
+   await nc.subscribe("updates", cb=cb, pending_msgs_limit=5)
+
+   for i in range(0, 10):
+     await nc.publish("updates", "msg #{}".format(i).encode())
+     await asyncio.sleep(0)
+
+   try:
+     await asyncio.wait_for(future, 1)
+   except asyncio.TimeoutError:
+     pass
+
+   for msg in msgs:
+     print("[Received]", msg)
+
+   await nc.close()
+
+   # [end slow_listener]
+
+loop = asyncio.get_event_loop()
+loop.run_until_complete(example())
+loop.close()
+#+END_SRC
