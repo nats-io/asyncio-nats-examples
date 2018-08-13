@@ -761,7 +761,6 @@ loop.close()
 #+END_SRC
 
 *** COMMENT subscribe_sync
-
 *** DONE subscribe_async
 
 #+BEGIN_SRC python :tangle subscribe_async.py
