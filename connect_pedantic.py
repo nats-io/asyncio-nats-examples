@@ -6,7 +6,7 @@ async def example():
    # [begin connect_pedantic]
    nc = NATS()
 
-   await nc.connect(servers=["nats://127.0.0.1:4222"], pedantic=True)
+   await nc.connect(servers=["nats://demo.nats.io:4222"], pedantic=True)
 
    # Do something with the connection.
 

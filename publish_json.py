@@ -7,7 +7,7 @@ async def example():
    # [begin publish_json]
    nc = NATS()
 
-   await nc.connect(servers=["nats://127.0.0.1:4222"])
+   await nc.connect(servers=["nats://demo.nats.io:4222"])
 
    await nc.publish("updates", json.dumps({"symbol": "GOOG", "price": 1200 }).encode())
 

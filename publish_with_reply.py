@@ -14,7 +14,7 @@ async def example():
      nonlocal future
      future.set_result(msg)
 
-   await nc.connect(servers=["nats://127.0.0.1:4222"])
+   await nc.connect(servers=["nats://demo.nats.io:4222"])
    await nc.subscribe("time", cb=sub)
 
    unique_reply_to = new_inbox()

@@ -11,7 +11,7 @@ async def example():
    async def sub(msg):
      await nc.publish(msg.reply, b'response')
 
-   await nc.connect(servers=["nats://127.0.0.1:4222"])
+   await nc.connect(servers=["nats://demo.nats.io:4222"])
    await nc.subscribe("time", cb=sub)
 
    # Send the request

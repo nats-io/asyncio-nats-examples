@@ -7,7 +7,7 @@ async def example():
    nc = NATS()
 
    await nc.connect(
-      servers=["nats://127.0.0.1:4222"],
+      servers=["nats://demo.nats.io:4222"],
       )
 
    # Do something with the connection.

@@ -6,7 +6,7 @@ async def example():
    # [begin connect_token_url]
    nc = NATS()
 
-   await nc.connect(servers=["nats://mytoken@127.0.0.1:4222"])
+   await nc.connect(servers=["nats://mytoken@demo.nats.io:4222"])
 
    # Do something with the connection.
 

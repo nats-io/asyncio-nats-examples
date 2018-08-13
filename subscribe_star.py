@@ -6,7 +6,7 @@ async def example():
    # [begin subscribe_star]
    nc = NATS()
 
-   await nc.connect(servers=["nats://127.0.0.1:4222"])
+   await nc.connect(servers=["nats://demo.nats.io:4222"])
 
    # Use queue to wait for 2 messages to arrive
    queue = asyncio.Queue()

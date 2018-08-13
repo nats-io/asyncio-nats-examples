@@ -13,7 +13,7 @@ async def example():
                            keyfile='client-key.pem')
    await nc.connect(io_loop=loop, tls=ssl_ctx)
 
-   await nc.connect(servers=["nats://127.0.0.1:4222"], tls=ssl_ctx)
+   await nc.connect(servers=["nats://demo.nats.io:4222"], tls=ssl_ctx)
 
    # Do something with the connection.
 

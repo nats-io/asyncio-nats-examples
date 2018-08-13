@@ -7,7 +7,7 @@ async def example():
    nc = NATS()
 
    await nc.connect(
-      servers=["nats://127.0.0.1:4222"],
+      servers=["nats://demo.nats.io:4222"],
       # Set maximum number of PINGs out without getting a PONG back
       # before the connection will be disconnected as a stale connection.
       max_outstanding_pings=5,

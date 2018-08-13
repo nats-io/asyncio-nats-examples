@@ -14,7 +14,7 @@ async def example():
       print("Got reconnected to {url}".format(url=nc.connected_url.netloc))
 
    await nc.connect(
-      servers=["nats://127.0.0.1:4222"],
+      servers=["nats://demo.nats.io:4222"],
       reconnect_time_wait=10,
       reconnected_cb=reconnected_cb,
       disconnected_cb=disconnected_cb,

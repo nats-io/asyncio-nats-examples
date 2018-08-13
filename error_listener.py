@@ -10,7 +10,7 @@ async def example():
       print("Error: ", e)
 
    await nc.connect(
-      servers=["nats://127.0.0.1:4222"],
+      servers=["nats://demo.nats.io:4222"],
       reconnect_time_wait=10,
       error_cb=error_cb,
       )

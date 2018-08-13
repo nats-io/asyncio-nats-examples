@@ -14,7 +14,7 @@ async def example():
        await nc.unsubscribe(e.sid)
 
    await nc.connect(
-      servers=["nats://127.0.0.1:4222"],
+      servers=["nats://demo.nats.io:4222"],
       error_cb=error_cb,
       )
 

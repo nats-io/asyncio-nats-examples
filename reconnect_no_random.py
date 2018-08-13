@@ -6,9 +6,9 @@ async def example():
    nc = NATS()
    await nc.connect(
       servers=[
-         "nats://127.0.0.1:1222",
-         "nats://127.0.0.1:1223",
-         "nats://127.0.0.1:1224"
+         "nats://demo.nats.io:1222",
+         "nats://demo.nats.io:1223",
+         "nats://demo.nats.io:1224"
          ],
       dont_randomize=True,
       )

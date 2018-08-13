@@ -6,7 +6,7 @@ async def example():
    # [begin connect_name]
    nc = NATS()
 
-   await nc.connect(servers=["nats://127.0.0.1:4222"], name="my-connection")
+   await nc.connect(servers=["nats://demo.nats.io:4222"], name="my-connection")
 
    # Do something with the connection.
 
