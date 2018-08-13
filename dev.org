@@ -6,7 +6,7 @@
 (setq org-babel-python-command "python3")
 #+END_SRC
 
-** [21/40] [52%] Progress
+** [28/39] [71%] Progress
 
 *** DONE connect_default
 
@@ -730,12 +730,190 @@ loop.close()
 #+RESULTS:
 : Reply: <Msg: subject='_INBOX.fh3njTclrpUDMuSj6ntDwz.fh3njTclrpUDjySj6ntDwz' reply='' data='response...'>
 
-*** TODO flush
-*** TODO subscribe_sync
-*** TODO subscribe_async
-*** TODO subscribe_w_reply
-*** TODO unsubscribe
-*** TODO unsubscribe_auto
+*** DONE flush
+
+#+BEGIN_SRC python :tangle flush.py
+import asyncio
+from nats.aio.client import Client as NATS
+
+async def example():
+
+   # [begin flush]
+   nc = NATS()
+
+   await nc.connect(servers=["nats://127.0.0.1:4222"])
+
+   await nc.publish("updates", b'All is Well')
+
+   # Sends a PING and wait for a PONG from the server, up to the given timeout.
+   # This gives guarantee that the server has processed above message.
+   await nc.flush(timeout=1)
+
+   # [end flush]
+
+   await nc.close()
+
+loop = asyncio.get_event_loop()
+loop.run_until_complete(example())
+loop.close()
+#+END_SRC
+
+*** COMMENT subscribe_sync
+
+*** DONE subscribe_async
+
+#+BEGIN_SRC python :tangle subscribe_async.py
+import asyncio
+from nats.aio.client import Client as NATS
+
+async def example():
+
+   # [begin subscribe_async]
+   nc = NATS()
+
+   await nc.connect(servers=["nats://127.0.0.1:4222"])
+
+   future = asyncio.Future()
+
+   async def cb(msg):
+     nonlocal future
+     future.set_result(msg)
+
+   await nc.subscribe("updates", cb=cb)
+   await nc.publish("updates", b'All is Well')
+   await nc.flush()
+
+   # Wait for message to come in
+   msg = await asyncio.wait_for(future, 1)
+
+   # [end subscribe_async]
+   print(msg)
+
+   await nc.close()
+
+loop = asyncio.get_event_loop()
+loop.run_until_complete(example())
+loop.close()
+#+END_SRC
+
+#+RESULTS:
+
+*** DONE subscribe_w_reply
+
+#+BEGIN_SRC python :tangle subscribe_w_reply.py
+import asyncio
+from nats.aio.client import Client as NATS
+from nats.aio.utils import new_inbox
+from datetime import datetime
+
+async def example():
+
+   # [begin subscribe_w_reply]
+   nc = NATS()
+
+   await nc.connect(servers=["nats://127.0.0.1:4222"])
+
+   future = asyncio.Future()
+
+   async def cb(msg):
+     nonlocal future
+     future.set_result(msg)
+
+   await nc.subscribe("time", cb=cb)
+
+   await nc.publish_request("time", new_inbox(), b'What is the time?')
+   await nc.flush()
+
+   # Read the message
+   msg = await asyncio.wait_for(future, 1)
+
+   # Send the time
+   time_as_bytes = "{}".format(datetime.now()).encode()
+   await nc.publish(msg.reply, time_as_bytes)
+
+   # [end subscribe_w_reply]
+
+   await nc.close()
+
+loop = asyncio.get_event_loop()
+loop.run_until_complete(example())
+loop.close()
+#+END_SRC
+
+#+RESULTS:
+: 2018-08-12 23:41:28.615782
+
+*** DONE unsubscribe
+
+#+BEGIN_SRC python :tangle unsubscribe.py
+import asyncio
+from nats.aio.client import Client as NATS
+
+async def example():
+
+   # [begin unsubscribe]
+   nc = NATS()
+
+   await nc.connect(servers=["nats://127.0.0.1:4222"])
+
+   future = asyncio.Future()
+
+   async def cb(msg):
+     nonlocal future
+     future.set_result(msg)
+
+   sid = await nc.subscribe("updates", cb=cb)
+   await nc.publish("updates", b'All is Well')
+
+   # Remove interest in subject
+   await nc.unsubscribe(sid)
+
+   # Won't be received...
+   await nc.publish("updates", b'...')
+
+   # [end unsubscribe]
+
+   await nc.close()
+
+loop = asyncio.get_event_loop()
+loop.run_until_complete(example())
+loop.close()
+#+END_SRC
+
+*** DONE unsubscribe_auto
+
+#+BEGIN_SRC python :tangle unsubscribe_auto.py
+import asyncio
+from nats.aio.client import Client as NATS
+
+async def example():
+
+   # [begin unsubscribe_auto]
+   nc = NATS()
+
+   await nc.connect(servers=["nats://127.0.0.1:4222"])
+
+   async def cb(msg):
+     print(msg)
+
+   sid = await nc.subscribe("updates", cb=cb)
+   await nc.auto_unsubscribe(sid, 1)
+   await nc.publish("updates", b'All is Well')
+
+   # Won't be received...
+   await nc.publish("updates", b'...')
+
+   # [end unsubscribe_auto]
+
+   await asyncio.sleep(1)
+
+   await nc.close()
+
+loop = asyncio.get_event_loop()
+loop.run_until_complete(example())
+loop.close()
+#+END_SRC
+
 *** TODO subscribe_json
 *** TODO subscribe_star
 *** TODO subscribe_arrow
