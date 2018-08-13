@@ -6,7 +6,7 @@
 (setq org-babel-python-command "python3")
 #+END_SRC
 
-** [15/41] Progress
+** [21/40] [52%] Progress
 
 *** DONE connect_default
 
@@ -496,15 +496,240 @@ loop.run_until_complete(example())
 loop.close()
 #+END_SRC
 
-*** TODO connect_tls_url
-*** TODO connect_userpass
-*** TODO connect_userpass_url
-*** TODO connect_token
-*** TODO connect_token_url
-*** TODO publish_bytes
-*** TODO publish_json
-*** TODO publish_with_reply
-*** TODO request_reply
+*** COMMENT connect_tls_url
+*** DONE connect_userpass
+
+#+BEGIN_SRC python :tangle connect_userpass.py
+import asyncio
+from nats.aio.client import Client as NATS
+
+async def example():
+
+   # [begin connect_userpass]
+   nc = NATS()
+
+   await nc.connect(servers=["nats://myname:password@127.0.0.1:4222"])
+
+   # Do something with the connection.
+
+   # [end connect_userpass]
+
+   await nc.close()
+
+loop = asyncio.get_event_loop()
+loop.run_until_complete(example())
+loop.close()
+#+END_SRC
+
+*** DONE connect_userpass_url
+
+#+BEGIN_SRC python :tangle connect_userpass_url.py
+import asyncio
+from nats.aio.client import Client as NATS
+
+async def example():
+
+   # [begin connect_userpass_url]
+   nc = NATS()
+
+   await nc.connect(servers=["nats://myname:password@127.0.0.1:4222"])
+
+   # Do something with the connection.
+
+   # [end connect_userpass_url]
+
+   await nc.close()
+
+loop = asyncio.get_event_loop()
+loop.run_until_complete(example())
+loop.close()
+#+END_SRC
+
+#+RESULTS:
+
+*** DONE connect_token
+
+#+BEGIN_SRC python :tangle connect_token.py
+import asyncio
+from nats.aio.client import Client as NATS
+
+async def example():
+
+   # [begin connect_token]
+   nc = NATS()
+
+   await nc.connect(servers=["nats://mytoken@127.0.0.1:4222"])
+
+   # Do something with the connection.
+
+   # [end connect_token]
+
+   await nc.close()
+
+loop = asyncio.get_event_loop()
+loop.run_until_complete(example())
+loop.close()
+#+END_SRC
+
+#+RESULTS:
+
+*** DONE connect_token_url
+
+#+BEGIN_SRC python :tangle connect_token_url.py
+import asyncio
+from nats.aio.client import Client as NATS
+
+async def example():
+
+   # [begin connect_token_url]
+   nc = NATS()
+
+   await nc.connect(servers=["nats://mytoken@127.0.0.1:4222"])
+
+   # Do something with the connection.
+
+   # [end connect_token_url]
+
+   await nc.close()
+
+loop = asyncio.get_event_loop()
+loop.run_until_complete(example())
+loop.close()
+#+END_SRC
+
+*** DONE publish_bytes
+
+#+BEGIN_SRC python :tangle publish_bytes.py
+import asyncio
+from nats.aio.client import Client as NATS
+
+async def example():
+
+   # [begin publish_bytes]
+   nc = NATS()
+
+   await nc.connect(servers=["nats://127.0.0.1:4222"])
+
+   await nc.publish("updates", b'All is Well')
+
+   # [end publish_bytes]
+
+   await nc.close()
+
+loop = asyncio.get_event_loop()
+loop.run_until_complete(example())
+loop.close()
+#+END_SRC
+
+#+RESULTS:
+
+*** DONE publish_json
+
+#+BEGIN_SRC python :tangle publish_json.py
+import asyncio
+import json
+from nats.aio.client import Client as NATS
+
+async def example():
+
+   # [begin publish_json]
+   nc = NATS()
+
+   await nc.connect(servers=["nats://127.0.0.1:4222"])
+
+   await nc.publish("updates", json.dumps({"symbol": "GOOG", "price": 1200 }).encode())
+
+   # [end publish_json]
+
+   await nc.close()
+
+loop = asyncio.get_event_loop()
+loop.run_until_complete(example())
+loop.close()
+#+END_SRC
+
+#+RESULTS:
+
+*** DONE publish_with_reply
+
+#+BEGIN_SRC python :tangle publish_with_reply.py
+import asyncio
+import json
+from nats.aio.client import Client as NATS
+from nats.aio.utils import new_inbox
+
+async def example():
+
+   # [begin publish_with_reply]
+   nc = NATS()
+
+   future = asyncio.Future()
+
+   async def sub(msg):
+     nonlocal future
+     future.set_result(msg)
+
+   await nc.connect(servers=["nats://127.0.0.1:4222"])
+   await nc.subscribe("time", cb=sub)
+
+   unique_reply_to = new_inbox()
+   await nc.publish_request("time", unique_reply_to, b'')
+
+   # Use the response
+   msg = await asyncio.wait_for(future, 1)
+   print("Reply:", msg)
+
+   # [end publish_with_reply]
+
+   await nc.close()
+
+loop = asyncio.get_event_loop()
+loop.run_until_complete(example())
+loop.close()
+#+END_SRC
+
+#+RESULTS:
+: Reply: <Msg: subject='time' reply='_INBOX.a91d4fcb94225c12419632fb4' data='...'>
+
+*** DONE request_reply
+
+#+BEGIN_SRC python :tangle request_reply.py
+import asyncio
+import json
+from nats.aio.client import Client as NATS
+from nats.aio.utils import new_inbox
+
+async def example():
+
+   # [begin request_reply]
+   nc = NATS()
+
+   async def sub(msg):
+     await nc.publish(msg.reply, b'response')
+
+   await nc.connect(servers=["nats://127.0.0.1:4222"])
+   await nc.subscribe("time", cb=sub)
+
+   # Send the request
+   try:
+     msg = await nc.request("time", b'', timeout=1)
+     # Use the response
+     print("Reply:", msg)
+   except asyncio.TimeoutError:
+     print("Timed out waiting for response")
+
+   # [end request_reply]
+
+   await nc.close()
+
+loop = asyncio.get_event_loop()
+loop.run_until_complete(example())
+loop.close()
+#+END_SRC
+
+#+RESULTS:
+: Reply: <Msg: subject='_INBOX.fh3njTclrpUDMuSj6ntDwz.fh3njTclrpUDjySj6ntDwz' reply='' data='response...'>
+
 *** TODO flush
 *** TODO subscribe_sync
 *** TODO subscribe_async
@@ -522,5 +747,3 @@ loop.close()
 *** TODO connect_status
 *** TODO slow_pending_limits
 *** TODO slow_listener      
-
-
