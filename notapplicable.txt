@@ -1,0 +1,16 @@
+[begin reconnect_5mb]
+# Asyncio NATS client currentply does not implement a reconnect buffer
+[end reconnect_5mb]
+
+[begin control_2k]
+# Asyncio NATS client does not allow custom control lines
+[end control_2k]
+
+[begin subscribe_sync]
+# Asyncio NATS client currently does not have a sync subscribe API
+[end subscribe_sync]
+
+[begin servers_added]
+# Asyncio NATS client does not support discovered servers handler right now
+[end servers_added]
+
