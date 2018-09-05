@@ -14,3 +14,29 @@
 # Asyncio NATS client does not support discovered servers handler right now
 [end servers_added]
 
+[begin connection_listener]
+# Asyncio NATS client can be defined a number of event callbacks
+async def disconnected_cb():
+    print("Got disconnected!")
+
+async def reconnected_cb():
+    # See who we are connected to on reconnect.
+    print("Got reconnected to {url}".format(url=nc.connected_url.netloc))
+
+async def error_cb(e):
+    print("There was an error: {}".format(e))
+
+async def closed_cb():
+    print("Connection is closed")
+
+# Setup callbacks to be notified on disconnects and reconnects
+options["disconnected_cb"] = disconnected_cb
+options["reconnected_cb"] = reconnected_cb
+
+# Setup callbacks to be notified when there is an error
+# or connection is closed.
+options["error_cb"] = error_cb
+options["closed_cb"] = closed_cb
+
+await nc.connect(**options)
+[end connection_listener]
