@@ -8,10 +8,13 @@ from nats.aio.errors import ErrTimeout
 async def run(loop):
     nc = NATS()
 
-    # Using certificates bundle provided via 'certifi' package.
-    ssl_ctx = ssl.create_default_context()
-    ssl_ctx.load_verify_locations(certifi.where())
-    await nc.connect(servers=["tls://demo.nats.io:4443"], loop=loop, tls=ssl_ctx)
+    # If using Python 3.7 in OS X and getting SSL errors, run first:
+    #
+    # /Applications/Python\ 3.7/Install\ Certificates.command
+    #
+    # Setting the tls as the scheme will use same defaults as `ssl.create_default_context()`
+    #
+    await nc.connect("tls://demo.nats.io:4443", loop=loop)
 
     async def message_handler(msg):
         subject = msg.subject
