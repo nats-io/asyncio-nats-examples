@@ -8,7 +8,7 @@ from nats.aio.errors import ErrTimeout
 async def run(loop):
     nc = NATS()
 
-    # Not usage of certifi library to load certs
+    # Using certificates bundle provided via 'certifi' package.
     ssl_ctx = ssl.create_default_context()
     ssl_ctx.load_verify_locations(certifi.where())
     await nc.connect(servers=["tls://demo.nats.io:4443"], loop=loop, tls=ssl_ctx)
