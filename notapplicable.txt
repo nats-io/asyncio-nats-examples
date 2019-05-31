@@ -1,5 +1,5 @@
 [begin reconnect_5mb]
-# Asyncio NATS client currentply does not implement a reconnect buffer
+# Asyncio NATS client currently does not implement a reconnect buffer
 [end reconnect_5mb]
 
 [begin control_2k]
