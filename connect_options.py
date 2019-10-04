@@ -4,7 +4,7 @@ from nats.aio.client import Client as NATS
 async def example():
    # [begin connect_options]
    nc = NATS()
-   await nc.connect(connect_timeout=2)
+   await nc.connect(connect_timeout=10)
 
    # Do something with the connection
 
